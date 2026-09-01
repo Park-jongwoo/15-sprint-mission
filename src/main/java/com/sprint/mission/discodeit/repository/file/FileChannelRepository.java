@@ -1,47 +1,43 @@
 package com.sprint.mission.discodeit.repository.file;
 
-import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.repository.MessageRepository;
+import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.repository.ChannelRepository;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class FileMessageRepository implements MessageRepository {
+@Repository
+@Service
+public class FileChannelRepository implements ChannelRepository {
 
     private final String filePath;
-    private Map<UUID, Message> data = new HashMap<>();
+    private Map<UUID, Channel> data = new HashMap<>();
 
-    public FileMessageRepository(String filePath) {
+    public FileChannelRepository(String filePath) {
         this.filePath = filePath;
         load();
     }
 
-    public FileMessageRepository() {
-        this("messages.ser");
+    public FileChannelRepository() {
+        this("channels.ser");
     }
 
     @Override
-    public Message save(Message message) {
-        data.put(message.getId(), message);
+    public Channel save(Channel channel) {
+        data.put(channel.getId(), channel);
         persist();
-        return message;
+        return channel;
     }
 
     @Override
-    public Optional<Message> findById(UUID id) {
+    public Optional<Channel> findById(UUID id) {
         return Optional.ofNullable(data.get(id));
     }
 
     @Override
-    public List<Message> findAllByChannelId(UUID channelId) {
-        return data.values().stream()
-                .filter(message -> message.getChannelId().equals(channelId))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Message> findAll() {
+    public List<Channel> findAll() {
         return new ArrayList<>(data.values());
     }
 
@@ -73,7 +69,7 @@ public class FileMessageRepository implements MessageRepository {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
             Object obj = ois.readObject();
             if (obj instanceof Map) {
-                this.data = (Map<UUID, Message>) obj;
+                this.data = (Map<UUID, Channel>) obj;
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
