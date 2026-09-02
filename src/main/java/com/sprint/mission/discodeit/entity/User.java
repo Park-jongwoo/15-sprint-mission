@@ -1,5 +1,8 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
+@Getter
 public class User extends BaseEntity {
 
     private String username;
@@ -22,16 +25,6 @@ public class User extends BaseEntity {
         this.password = password;
         touch();
     }
-    public String getUsername() {
-        return username;
-    }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 
 }

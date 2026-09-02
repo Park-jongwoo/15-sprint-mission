@@ -1,8 +1,11 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
 import java.time.Instant;
 import java.util.UUID;
 
+@Getter
 public class Message extends BaseEntity {
 
     private String content;
@@ -22,15 +25,5 @@ public class Message extends BaseEntity {
         touch();
     }
 
-    public String getContent() {
-        return content;
-    }
 
-    public UUID getAuthorId() {
-        return authorId;
-    }
-
-    public UUID getChannelId() {
-        return channelId;
-    }
 }

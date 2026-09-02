@@ -1,8 +1,11 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
 import java.time.Instant;
 import java.util.UUID;
 
+@Getter
 public class Channel extends BaseEntity {
 
     private String name;
@@ -21,13 +24,7 @@ public class Channel extends BaseEntity {
         this.description = description;
         touch();
     }
-    public String getName() {
-        return name;
-    }
 
-    public String getDescription() {
-        return description;
-    }
 }
 
 
