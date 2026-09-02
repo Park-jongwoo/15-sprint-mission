@@ -10,19 +10,18 @@ import java.util.UUID;
 public class BaseEntity implements Serializable {
 
     private final UUID id;
-    private String password;
-    private final Long createdAt;
-    private Long updatedAt;
+    private final Instant createdAt;
+    private Instant updatedAt;
 
     public BaseEntity() {
         this.id = UUID.randomUUID();
-        this.createdAt = Instant.now().getEpochSecond();
+        this.createdAt = Instant.now();
         this.updatedAt = null;
     }
 
     // 데이터 변경 시 호출하여 수정 시간 갱신
     protected void touch() {
-        this.updatedAt = Instant.now().getEpochSecond();
+        this.updatedAt = Instant.now();
     }
 
 
