@@ -1,20 +1,28 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.entity.Message;
+import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
+import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
-@Service
+@Repository
 public class BasicMessageService implements MessageService {
 
     private final MessageRepository messageRepository;
+    private final UserRepository userRepository;
+    private final ChannelRepository channelRepository;
 
-    public BasicMessageService(MessageRepository messageRepository) {
+    public BasicMessageService(MessageRepository messageRepository, ChannelRepository channelRepository, UserRepository userRepository) {
+        this.channelRepository = channelRepository;
+        this.userRepository = userRepository;
         this.messageRepository = messageRepository;
     }
 
@@ -41,13 +49,11 @@ public class BasicMessageService implements MessageService {
 
     @Override
     public Message update(UUID id, String content) {
-        Optional<Message> optionalMessage = messageRepository.findById(id);
-        if (optionalMessage.isPresent()) {
-            Message message = optionalMessage.get();
-            message.update(content);
-            return messageRepository.save(message);
-        }
-        return null;
+        Message message = messageRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("메시지를 찾을 수 없습니다: " + id));
+
+        message.update(content);
+        return messageRepository.save(message);
     }
 
     @Override

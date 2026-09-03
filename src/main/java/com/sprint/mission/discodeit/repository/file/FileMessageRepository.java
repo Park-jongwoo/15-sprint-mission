@@ -64,7 +64,7 @@ public class FileMessageRepository implements MessageRepository {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
             oos.writeObject(data);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("파일 저장중 오류 발생"+filePath,e);
         }
     }
 
@@ -80,7 +80,7 @@ public class FileMessageRepository implements MessageRepository {
                 this.data = (Map<UUID, Message>) obj;
             }
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            throw new RuntimeException("파일 로드중 오류발생."+filePath,e);
         }
     }
 }
