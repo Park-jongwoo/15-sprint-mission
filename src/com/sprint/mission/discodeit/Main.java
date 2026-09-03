@@ -29,9 +29,9 @@ public class Main {
     public static void main(String[] args) {
 
 
-        UserService userService = context.getBean(UserService.class);
-        ChannelService channelService = context.getBean(ChannelService.class);
-        MessageService messageService = context.getBean(MessageService.class);
+//        UserService userService = context.getBean(UserService.class);
+//        ChannelService channelService = context.getBean(ChannelService.class);
+//        MessageService messageService = context.getBean(MessageService.class);
 //        Scanner sc = new Scanner(System.in);
 //
 //        // 1. File Repository 생성 (파일 IO 및 역직렬화 수행)

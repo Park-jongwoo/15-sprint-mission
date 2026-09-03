@@ -11,8 +11,8 @@ public interface UserStatusRepository {
 
     UserStatus save(UserStatus userStatus);
     Optional<UserStatus> findById(UUID id);
-    Optional<UserStatus> findUserId(UUID id);
-    List<Status> findAll();
-    void deletedById(UUID id);
-    void deletedByUserId(UUID userId);
+    Optional<UserStatus> findByUserId(UUID userId);
+    List<UserStatus> findAll();
+    void deleteById(UUID id);
+
 }
