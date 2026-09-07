@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit;
 
+import com.sprint.mission.discodeit.dto.MessageCreateDto;
 import com.sprint.mission.discodeit.dto.UserCreateDto;
 import com.sprint.mission.discodeit.dto.UserResponseDto;
 import org.springframework.boot.SpringApplication;
@@ -51,7 +52,13 @@ public class DiscodeitApplication {
 		}
 
 	private static void messageCreateTest(MessageService messageService, Channel channel, UserResponseDto user) {
-		Message message = messageService.create("테스트 메시지입니다.", user.id(), channel.getId());
+		MessageCreateDto dto = new MessageCreateDto(
+				"테스트 메시지입니다.",
+				user.id(),
+				channel.getId(),
+				null
+		);
+		Message message = messageService.create(dto);
 		System.out.println("생성된 메시지: " + message.getContent() + " (ID: " + message.getId() + ")");
 	}
 
