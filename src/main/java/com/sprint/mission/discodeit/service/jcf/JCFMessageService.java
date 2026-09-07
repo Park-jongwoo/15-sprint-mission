@@ -1,6 +1,8 @@
 package com.sprint.mission.discodeit.service.jcf;
 
 import com.sprint.mission.discodeit.entity.Message;
+import com.sprint.mission.discodeit.repository.ChannelRepository;
+import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
@@ -10,22 +12,22 @@ import java.util.*;
 public class JCFMessageService implements MessageService {
 
     private final Map<UUID, Message> data = new HashMap<>();
-    private final UserService userService;
-    private final ChannelService channelService;
+    private final UserRepository userRepository;
+    private final ChannelRepository channelRepository;
 
     // 의존성 주입 (DI)
-    public JCFMessageService(UserService userService, ChannelService channelService) {
-        this.userService = userService;
-        this.channelService = channelService;
+    public JCFMessageService(UserRepository userRepository, ChannelRepository channelRepository) {
+        this.userRepository = userRepository;
+        this.channelRepository = channelRepository;
     }
 
     @Override
     public Message create(String content, UUID authorId, UUID channelId) {
-        // 작성자 및 채널 유효성 검증
-        if (userService.read(authorId).isEmpty()) {
+        // Repository를 직접 사용하여 존재 여부 검증
+        if (!userRepository.existsById(authorId)) {
             throw new NoSuchElementException("작성자(User)를 찾을 수 없습니다: " + authorId);
         }
-        if (channelService.read(channelId).isEmpty()) {
+        if (!channelRepository.existsById(channelId)) {
             throw new NoSuchElementException("채널(Channel)을 찾을 수 없습니다: " + channelId);
         }
 

@@ -2,14 +2,14 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.*;
 
+@Primary
 @Repository
-@Service
 public class FileUserRepository implements UserRepository {
 
     private final String filePath;
@@ -44,6 +44,13 @@ public class FileUserRepository implements UserRepository {
     }
 
     @Override
+    public Optional<User> findByUsername(String username) {
+        return data.values().stream()
+                .filter(user -> user.getUsername().equals(username))
+                .findFirst();
+    }
+
+    @Override
     public List<User> findAll() {
         return new ArrayList<>(data.values());
     }
@@ -63,6 +70,12 @@ public class FileUserRepository implements UserRepository {
     public boolean existsByEmail(String email) {
         return data.values().stream()
                 .anyMatch(user -> user.getEmail().equals(email));
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return data.values().stream()
+                .anyMatch(user -> user.getUsername().equals(username));
     }
 
     private void persist() {
