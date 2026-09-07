@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
@@ -9,8 +10,8 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Primary
 @Repository
-@Service
 public class FileMessageRepository implements MessageRepository {
 
     private final String filePath;

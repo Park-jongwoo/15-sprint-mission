@@ -1,8 +1,6 @@
 package com.sprint.mission.discodeit;
 
-import com.sprint.mission.discodeit.dto.MessageCreateDto;
-import com.sprint.mission.discodeit.dto.UserCreateDto;
-import com.sprint.mission.discodeit.dto.UserResponseDto;
+import com.sprint.mission.discodeit.dto.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -27,7 +25,7 @@ public class DiscodeitApplication {
 		MessageService messageService = context.getBean(MessageService.class);
 
 		UserResponseDto user = setupUser(userService);
-		Channel channel = setupChannel(channelService);
+		ChannelResponseDto channel = setupChannel(channelService);
 
 		messageCreateTest(messageService, channel, user);
 	}
@@ -47,15 +45,15 @@ public class DiscodeitApplication {
 		}
 	}
 
-		private static Channel setupChannel(ChannelService channelService) {
-			return channelService.create("general", "일반 채널");
-		}
-
-	private static void messageCreateTest(MessageService messageService, Channel channel, UserResponseDto user) {
+	private static ChannelResponseDto setupChannel(ChannelService channelService) {
+		PublicChannelCreateDto dto = new PublicChannelCreateDto("general", "일반 채널");
+		return channelService.createPublicChannel(dto);
+	}
+	private static void messageCreateTest(MessageService messageService, ChannelResponseDto channel, UserResponseDto user) {
 		MessageCreateDto dto = new MessageCreateDto(
 				"테스트 메시지입니다.",
 				user.id(),
-				channel.getId(),
+				channel.id(),
 				null
 		);
 		Message message = messageService.create(dto);

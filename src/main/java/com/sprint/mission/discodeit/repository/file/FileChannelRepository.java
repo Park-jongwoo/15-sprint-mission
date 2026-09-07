@@ -2,14 +2,15 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.*;
 
+@Primary
 @Repository
-@Service
 public class FileChannelRepository implements ChannelRepository {
 
     private final String filePath;
