@@ -1,64 +1,81 @@
 package com.sprint.mission.discodeit;
 
-import com.sprint.mission.discodeit.dto.*;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
-
-// 서비스 및 엔티티 import 추가
-import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.dto.ChannelResponseDto;
+import com.sprint.mission.discodeit.dto.MessageCreateDto;
+import com.sprint.mission.discodeit.dto.PublicChannelCreateDto;
+import com.sprint.mission.discodeit.dto.UserCreateDto;
+import com.sprint.mission.discodeit.dto.UserResponseDto;
+import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
-import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.Message;
+import com.sprint.mission.discodeit.service.UserService;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import java.util.UUID;
 
 @SpringBootApplication
 public class DiscodeitApplication {
 
 	public static void main(String[] args) {
-
-
-		ConfigurableApplicationContext context = SpringApplication.run(DiscodeitApplication.class, args);
-
-		UserService userService = context.getBean(UserService.class);
-		ChannelService channelService = context.getBean(ChannelService.class);
-		MessageService messageService = context.getBean(MessageService.class);
-
-		UserResponseDto user = setupUser(userService);
-		ChannelResponseDto channel = setupChannel(channelService);
-
-		messageCreateTest(messageService, channel, user);
-	}
-	private static UserResponseDto setupUser(UserService userService) {
-		String username = "testUser";
-		String email = "test@test.com";
-
-		try {
-			UserCreateDto dto = new UserCreateDto(username, email, "password123", null);
-			return userService.create(dto);
-		} catch (IllegalArgumentException e) {
-			// 이미 생성되어 중복 예외가 발생한 경우, 기존 유저를 조회해서 반환
-			return userService.findAll().stream()
-					.filter(u -> u.username().equals(username))
-					.findFirst()
-					.orElseThrow(() -> new IllegalStateException("기존 유저 조회 실패", e));
-		}
+		SpringApplication.run(DiscodeitApplication.class, args);
 	}
 
-	private static ChannelResponseDto setupChannel(ChannelService channelService) {
-		PublicChannelCreateDto dto = new PublicChannelCreateDto("general", "일반 채널");
-		return channelService.createPublicChannel(dto);
-	}
-	private static void messageCreateTest(MessageService messageService, ChannelResponseDto channel, UserResponseDto user) {
-		MessageCreateDto dto = new MessageCreateDto(
-				"테스트 메시지입니다.",
-				user.id(),
-				channel.id(),
-				null
-		);
-		Message message = messageService.create(dto);
-		System.out.println("생성된 메시지: " + message.getContent() + " (ID: " + message.getId() + ")");
-	}
+	@Bean
+	public CommandLineRunner runVerification(
+			UserService userService,
+			ChannelService channelService,
+			MessageService messageService
+	) {
+		return args -> {
+			System.out.println("\n========== [기능 검증 테스트 시작] ==========");
 
+			// 1. 유저 생성/조회 테스트
+			String uniqueSuffix = UUID.randomUUID().toString().substring(0, 5);
+			String testEmail = "dev_" + uniqueSuffix + "@test.com";
+			String testUsername = "user_" + uniqueSuffix;
 
+			UserResponseDto user;
+			try {
+				user = userService.create(new UserCreateDto(testUsername, testEmail, "password123!", null));
+				System.out.printf("[✓] 1. 유저 생성 성공: id=%s, name=%s, email=%s%n", user.id(), user.username(), user.email());
+			} catch (Exception e) {
+				System.out.println("[!] 유저 생성 실패/중복 발생 -> 기존 유저 조회 시도: " + e.getMessage());
+				user = userService.findAll().stream()
+						.findFirst()
+						.orElseThrow(() -> new IllegalStateException("테스트할 유저가 존재하지 않습니다."));
+				System.out.printf("[✓] 1. 기존 유저 조회 성공: id=%s, name=%s%n", user.id(), user.username());
+			}
+
+			// 2. 채널 생성 테스트
+			PublicChannelCreateDto channelDto = new PublicChannelCreateDto("channel-" + uniqueSuffix, "테스트용 공개 채널");
+			ChannelResponseDto channel = channelService.createPublicChannel(channelDto);
+			System.out.printf("[✓] 2. 채널 생성 성공: id=%s, name=%s%n", channel.id(), channel.name());
+
+			// 3. 메시지 생성 및 조회 검증
+			String messageText = "스프린트 미션 동작 확인 메시지 (" + uniqueSuffix + ")";
+			MessageCreateDto messageDto = new MessageCreateDto(messageText, user.id(), channel.id(), null);
+			Message createdMessage = messageService.create(messageDto);
+
+			System.out.printf("[✓] 3. 메시지 발송 성공: id=%s, content='%s'%n", createdMessage.getId(), createdMessage.getContent());
+
+			// 4. 데이터 정합성 체크
+			// getAuthorId(), getChannelId()를 통해 ID 직접 일치 여부 확인
+			boolean isContentMatched = messageText.equals(createdMessage.getContent());
+			boolean isAuthorMatched = user.id().equals(createdMessage.getAuthorId());
+			boolean isChannelMatched = channel.id().equals(createdMessage.getChannelId());
+
+			if (isContentMatched && isAuthorMatched && isChannelMatched) {
+				System.out.println("[SUCCESS] 모든 서비스 연동 및 데이터 매핑이 정상적으로 완료되었습니다.");
+			} else {
+				System.err.println("[FAIL] 데이터 불일치 발생:");
+				System.err.printf("- 본문 일치: %b | 작성자 ID 일치: %b | 채널 ID 일치: %b%n",
+						isContentMatched, isAuthorMatched, isChannelMatched);
+			}
+
+			System.out.println("============================================\n");
+		};
+	}
 }
