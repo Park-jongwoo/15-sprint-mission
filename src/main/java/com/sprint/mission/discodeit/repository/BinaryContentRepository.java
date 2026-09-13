@@ -12,4 +12,6 @@ public interface BinaryContentRepository {
     Optional<BinaryContent> findById(UUID id);
     List<BinaryContent> findAllByIdIn(List<UUID> ids);
     void deleteById(UUID id);
+
+    boolean existsById(UUID id);
 }

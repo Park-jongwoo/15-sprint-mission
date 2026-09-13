@@ -2,10 +2,12 @@ package com.sprint.mission.discodeit.repository.jcf;
 
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 @Repository
 public class JCFBinaryContentRepository implements BinaryContentRepository {
@@ -32,6 +34,11 @@ public class JCFBinaryContentRepository implements BinaryContentRepository {
                 .map(store::get)
                 .filter(Objects::nonNull)
                 .toList();
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return store.containsKey(id);
     }
 
     @Override

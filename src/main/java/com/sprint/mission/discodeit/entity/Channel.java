@@ -17,7 +17,7 @@ public class Channel extends BaseEntity {
     public Channel(String name, String description) {
         this(name, description, ChannelType.PUBLIC);
     }
-
+//todo 이거 해야할꺼같다.
     public Channel(String name, String description,ChannelType type)
     {
         super();
@@ -25,7 +25,7 @@ public class Channel extends BaseEntity {
         this.description = description;
         this.type = ( type != null )? type : ChannelType.PUBLIC;
     }
-
+//todo 확인용
     public void update(String name, String description)
     {
         this.name = name;
